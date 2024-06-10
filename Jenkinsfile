@@ -9,6 +9,9 @@ pipeline {
         disableConcurrentBuilds()
         ansiColor('xterm')
     }
+    parameters {
+        choice(name: 'action', choices: ['Apply', 'Destroy'], description: 'Pick something')
+    }    
 
     stages {
         stage('Init') { 
@@ -33,7 +36,7 @@ pipeline {
                 message "Should we continue?"
                 ok "Yes, we should."
             }     
-                   
+
             steps {
                 sh """
                  cd 01-vpc
