@@ -24,6 +24,12 @@ pipeline {
             }
         }
         stage('Plan') { 
+            when {
+                expression{
+                    params.action == 'Apply'
+                }
+            }
+
             steps {
                 sh """
                  cd 01-vpc
@@ -32,28 +38,31 @@ pipeline {
             }
         }
         stage('Deploy') { 
-            input {
-                message "Should we continue?"
-                ok "Yes, we should."
-            }     
+            when {
+                expression{
+                    params.action == 'Destroy'
+                }
+            }  
 
             steps {
                 sh """
                  cd 01-vpc
-                 terraform apply -auto-approve
+                 terraform destroy -auto-approve
                 """
             }
         }
-        stage('Print params'){
+        stage('Destroy') {
+            when {
+                expression{
+                    params.action == 'Destroy'
+                }
+            }
             steps {
-                echo "Hello ${params.PERSON}"
-                echo "Biography: ${params.BIOGRAPHY}"
-                echo "Toggle: ${params.TOGGLE}"
-                echo "Choice: ${params.CHOICE}"
-                echo "Password: ${params.PASSWORD}"
-                echo "triggered test2"
-                
-            }            
+                sh """
+                cd 01-vpc
+                terraform destroy -auto-approve
+                """
+            }
         }
 
     }
